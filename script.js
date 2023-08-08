@@ -8,6 +8,50 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputTemp = document.querySelector('.form__input--temp');
 const inputClimb = document.querySelector('.form__input--climb');
 
+class Workout {
+  date = new Date();
+  id = Math.random().toString(36).substr(2, 9);
+  constructor(coords, distance, duration) {
+    this.coords = coords;
+    this.distance = distance;
+    this.duration = duration;
+  }
+}
+
+class Running extends Workout {
+  constructor(coords, distance, duration, temp) {
+    super(coords, distance, duration);
+    this.temp = temp;
+    this.calculatePace();
+  }
+
+  calculatePace() {
+    // min/km
+    this.pace = this.duration / this.distance;
+  }
+}
+class Cycling extends Workout {
+  constructor(coords, distance, duration, climb) {
+    super(coords, distance, duration);
+    this.climb = climb;
+    this.calculateSpeed();
+  }
+
+  calculateSpeed() {
+    // km/h
+    this.speed = this.distance / this.duration / 60;
+  }
+}
+
+// const test = new Workout('46,33, 26.22', 22, 30);
+// console.log(test);
+
+// const running = new Running(['46,33, 26.22'], 22, 30, 170);
+// console.log(running);
+
+// const cycling = new Cycling(['16,33, 36.22'], 12, 39, 370);
+// console.log(cycling);
+
 class App {
   #map;
   #mapEvent;
