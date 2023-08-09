@@ -11,6 +11,7 @@ const inputClimb = document.querySelector('.form__input--climb');
 class Workout {
   date = new Date();
   id = Math.random().toString(36).substr(2, 10);
+  clickNumber = 0;
 
   constructor(coords, distance, duration) {
     this.coords = coords;
@@ -37,6 +38,10 @@ class Workout {
           'ru-Ru',
           options
         ).format(this.date)}`);
+  }
+
+  click() {
+    this.clickNumber++;
   }
 }
 
@@ -77,10 +82,9 @@ class App {
 
   constructor() {
     this._getPosition();
-
     form.addEventListener('submit', this._newWorkout.bind(this));
-
     inputType.addEventListener('change', this._toggleClimbField.bind(this));
+    containerWorkouts.addEventListener('click', this._moveToWorkout.bind(this));
   }
 
   _getPosition() {
@@ -246,6 +250,25 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToWorkout(e) {
+    const workoutElement = e.target.closest('.workout');
+
+    if (!workoutElement) return;
+    const currentWorkoutId = workoutElement.dataset.id;
+    const workout = this.#workouts.find(
+      workout => workout.id === currentWorkoutId
+    );
+
+    this.#map.setView(workout.coords, 13, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
+
+    workout.click();
   }
 }
 
