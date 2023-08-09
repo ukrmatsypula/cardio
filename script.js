@@ -10,7 +10,8 @@ const inputClimb = document.querySelector('.form__input--climb');
 
 class Workout {
   date = new Date();
-  id = Math.random().toString(36).substr(2, 9);
+  id = Math.random().toString(36).substr(2, 10);
+
   constructor(coords, distance, duration) {
     this.coords = coords;
     this.distance = distance;
@@ -19,6 +20,8 @@ class Workout {
 }
 
 class Running extends Workout {
+  type = 'running';
+
   constructor(coords, distance, duration, temp) {
     super(coords, distance, duration);
     this.temp = temp;
@@ -31,6 +34,7 @@ class Running extends Workout {
   }
 }
 class Cycling extends Workout {
+  type = 'cycling';
   constructor(coords, distance, duration, climb) {
     super(coords, distance, duration);
     this.climb = climb;
@@ -43,18 +47,10 @@ class Cycling extends Workout {
   }
 }
 
-// const test = new Workout('46,33, 26.22', 22, 30);
-// console.log(test);
-
-// const running = new Running(['46,33, 26.22'], 22, 30, 170);
-// console.log(running);
-
-// const cycling = new Cycling(['16,33, 36.22'], 12, 39, 370);
-// console.log(cycling);
-
 class App {
   #map;
   #mapEvent;
+  #workouts = [];
 
   constructor() {
     this._getPosition();
@@ -102,14 +98,59 @@ class App {
   }
   _newWorkout(e) {
     e.preventDefault();
+
+    const { lat, lng } = this.#mapEvent.latlng;
+    let workout;
+
+    const areNumbers = (...numbers) =>
+      numbers.every(num => Number.isFinite(num));
+
+    const areNumbersPositive = (...numbers) => numbers.every(num => num > 0);
+
+    const type = inputType.value;
+    const distance = +inputDistance.value;
+    const duration = +inputDuration.value;
+
+    if (type === 'running') {
+      const temp = +inputTemp.value;
+
+      if (
+        !areNumbers(distance, duration, temp) ||
+        !areNumbersPositive(distance, duration, temp)
+      ) {
+        return alert('Введите положительное число!');
+      }
+
+      workout = new Running([lat, lng], distance, duration, temp);
+    }
+
+    if (type === 'cycling') {
+      const climb = +inputClimb.value;
+
+      if (
+        !areNumbers(distance, duration, climb) ||
+        !areNumbersPositive(distance, duration)
+      ) {
+        return alert('Введите положительное число!');
+      }
+
+      workout = new Cycling([lat, lng], distance, duration, climb);
+    }
+
+    this.#workouts.push(workout);
+    console.log(workout);
+
+    this.displayWorkout(workout);
+
     inputDistance.value =
       inputDuration.value =
       inputTemp.value =
       inputClimb.value =
         '';
+  }
 
-    const { lat, lng } = this.#mapEvent.latlng;
-    L.marker([lat, lng])
+  displayWorkout(workout) {
+    L.marker(workout.coords)
       .addTo(this.#map)
       .bindPopup(
         L.popup({
@@ -117,7 +158,7 @@ class App {
           minWidth: 100,
           autoClose: false,
           closeOnClick: false,
-          className: 'running-popup',
+          className: `${workout.type}-popup`,
         })
       )
       .setPopupContent('Тренировка')
