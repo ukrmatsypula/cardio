@@ -11,7 +11,6 @@ const inputClimb = document.querySelector('.form__input--climb');
 class Workout {
   date = new Date();
   id = Math.random().toString(36).substr(2, 10);
-  clickNumber = 0;
 
   constructor(coords, distance, duration) {
     this.coords = coords;
@@ -38,10 +37,6 @@ class Workout {
           'ru-Ru',
           options
         ).format(this.date)}`);
-  }
-
-  click() {
-    this.clickNumber++;
   }
 }
 
@@ -82,6 +77,7 @@ class App {
 
   constructor() {
     this._getPosition();
+    this._getLocalStorageData();
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleClimbField.bind(this));
     containerWorkouts.addEventListener('click', this._moveToWorkout.bind(this));
@@ -113,6 +109,7 @@ class App {
     }).addTo(this.#map);
 
     this.#map.on('click', this._showForm.bind(this));
+    this.#workouts.forEach(workout => this._displayWorkout(workout));
   }
   _showForm(e) {
     this.#mapEvent = e;
@@ -179,6 +176,8 @@ class App {
     this._displayWorkoutOnSidebar(workout);
 
     this._hideForm();
+
+    this._addWorkoutToLocalStorage();
   }
 
   _displayWorkout(workout) {
@@ -267,8 +266,24 @@ class App {
         duration: 1,
       },
     });
+  }
 
-    workout.click();
+  _addWorkoutToLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorageData() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+
+    if (!data) return;
+
+    this.#workouts = data;
+    this.#workouts.forEach(workout => this._displayWorkoutOnSidebar(workout));
+  }
+
+  reset() {
+    localStorage.removeItem('workouts');
+    location.reload();
   }
 }
 
