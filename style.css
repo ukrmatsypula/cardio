@@ -76,6 +76,7 @@ a:visited {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 0.75rem 1.5rem;
+  position: relative;
 }
 .workout--running {
   border-left: 5px solid var(--color-brand--2);
@@ -111,6 +112,20 @@ a:visited {
   color: var(--color-light--1);
   text-transform: uppercase;
   font-weight: 800;
+}
+
+.workout__close {
+  font-size: 17px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  padding: 10px;
+  transition: opacity 0.3s linear;
+}
+
+.workout__close:hover {
+  opacity: 0.7;
 }
 
 .form {

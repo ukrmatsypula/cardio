@@ -201,6 +201,7 @@ class App {
   _displayWorkoutOnSidebar(workout) {
     let html = `
     <li class="workout workout--${workout.type}" data-id="${workout.id}">
+        <span class="workout__close">&times;</span>
         <h2 class="workout__title">${workout.description}</h2>
         <div class="workout__details">
           <span class="workout__icon">${
