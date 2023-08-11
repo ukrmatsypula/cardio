@@ -233,3 +233,24 @@ a:visited {
 .cycling-popup .leaflet-popup-content-wrapper {
   border-left: 5px solid var(--color-brand--1);
 }
+
+.reset-all {
+  display: block;
+  margin-left: auto;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  background-color: #204054;
+  border: 0;
+  cursor: pointer;
+
+  transition: background-color 0.3s linear, color 0.3s linear;
+}
+
+.reset-all:hover {
+  background-color: #1e74a9;
+  color: white;
+}
+
+.reset-all.hidden {
+  display: none;
+}

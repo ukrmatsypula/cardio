@@ -7,6 +7,7 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputTemp = document.querySelector('.form__input--temp');
 const inputClimb = document.querySelector('.form__input--climb');
+const resetAll = document.querySelector('.reset-all');
 
 class Workout {
   date = new Date();
@@ -77,10 +78,10 @@ class App {
 
   constructor() {
     this._getPosition();
-    this._getLocalStorageData();
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleClimbField.bind(this));
     containerWorkouts.addEventListener('click', this._moveToWorkout.bind(this));
+    this._getLocalStorageData();
   }
 
   _getPosition() {
@@ -170,7 +171,6 @@ class App {
     }
 
     this.#workouts.push(workout);
-    console.log(workout);
 
     this._displayWorkout(workout);
     this._displayWorkoutOnSidebar(workout);
@@ -250,6 +250,14 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+
+    const closeWorkout = document.querySelector('.workout__close');
+    resetAll.addEventListener('click', this.reset.bind(this));
+    this._removeResetAllButton();
+
+    if (closeWorkout) {
+      closeWorkout.addEventListener('click', this._removeWorkout.bind(this));
+    }
   }
 
   _moveToWorkout(e) {
@@ -285,6 +293,35 @@ class App {
   reset() {
     localStorage.removeItem('workouts');
     location.reload();
+  }
+
+  _removeWorkout(e) {
+    e.stopPropagation();
+
+    const currentWorkout = e.target.closest('.workout');
+    const workoutIdToDelete = currentWorkout ? currentWorkout.dataset.id : '';
+
+    const workoutIndexToDelete = this.#workouts.findIndex(workout => {
+      workout.id === workoutIdToDelete;
+    });
+
+    this.#workouts.splice(workoutIndexToDelete, 1);
+
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+
+    if (localStorage.getItem('workouts') || this.#workouts.length) {
+      this._removeResetAllButton();
+    }
+
+    if (this.#workouts.length) {
+      this.#workouts.forEach(workout => this._displayWorkoutOnSidebar(workout));
+    }
+
+    location.reload();
+  }
+
+  _removeResetAllButton() {
+    resetAll.classList.remove('hidden');
   }
 }
 
